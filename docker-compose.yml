@@ -8,6 +8,34 @@ services:
             - 27017:27017
         volumes:
             - mongodbdata:/data/db
+    rabbitmq:
+        image: rabbitmq:management
+        container_name: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+        volumes:
+            - rabbitmqdata:/var/lib/rabbitmq
+        hostname: rabbitmq
+    play_catalog_service:
+        image: play_catalog_service
+        container_name: play_catalog_service_container
+        ports:
+            - 8000:5000
+        depends_on:
+            - mongo
+            - rabbitmq
+    play_inventory_service:
+        image: play_inventory_service
+        container_name: play_inventory_service_container
+        ports:
+            - 8080:5001
+        depends_on:
+            mongo:
+                condition: service_started
+            rabbitmq:
+                condition: service_started
 
 volumes:
-    mongodbdata:    
+    mongodbdata:
+    rabbitmqdata:
